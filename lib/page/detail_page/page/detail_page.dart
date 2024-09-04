@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:app_ecomerce/common/app_state_cubit/app_state_cubit.dart';
 import 'package:app_ecomerce/common/config/constants.dart';
 import 'package:app_ecomerce/data/model/product_api.dart';
+import 'package:app_ecomerce/data/model/user_api.dart';
 import 'package:app_ecomerce/data/provider/cart_provider.dart';
 import 'package:app_ecomerce/data/service/product_service.dart';
+import 'package:app_ecomerce/data/service/user_service.dart';
 import 'package:app_ecomerce/page/detail_page/widget/cart_item_badge.dart';
 import 'package:app_ecomerce/page/quick_food/widget/product_card.dart';
 import 'package:app_ecomerce/page/shopping_cart/page/shopping_cart_page.dart';
@@ -31,6 +31,8 @@ class _DetailPageState extends State<DetailPage> {
   List<Product> _products = [];
   bool isLoading = true;
   Product product = Product();
+  User _user = User();
+  final UserService _userService = UserService();
 
   int _cartItemsNo = 0;
   @override
@@ -38,6 +40,7 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     _fetchProductDetail();
     _fetchProducts();
+    _fetchCurrentUser();
   }
 
   void _updateCartItemNo() {
@@ -58,6 +61,17 @@ class _DetailPageState extends State<DetailPage> {
       });
     });
     await _productService.getDetailProduct(widget.productID);
+  }
+
+  Future<void> _fetchCurrentUser() async {
+    _userService.setUpdateListerner(() {
+      setState(() {
+        if (_userService.users.isNotEmpty) {
+          _user = _userService.users.first;
+        }
+      });
+    });
+    _userService.fetchUserCurrent();
   }
 
   Future<void> _fetchProducts() async {
@@ -299,25 +313,6 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // CartCounter(
-                      //   onQuantityChanged: _updateCartQuantity,
-                      // ),
-                      // Container(
-                      //   padding: EdgeInsets.all(8),
-                      //   height: 32,
-                      //   width: 32,
-                      //   decoration: BoxDecoration(
-                      //     color: Color(0xFFFF6464),
-                      //     shape: BoxShape.circle,
-                      //   ),
-                      //   child: SvgPicture.asset('assets/icons/heart.svg'),
-                      // ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
                     children: <Widget>[
                       Container(
                         margin: EdgeInsets.only(right: 20),
@@ -370,9 +365,12 @@ class _DetailPageState extends State<DetailPage> {
                               // context.read<AppStateCubit>().addProductToCart(
                               //       product,
                               _updateCartItemNo();
-                              context
-                                  .read<CartProvider>()
-                                  .addToCart(product, 1, 'Default');
+                              context.read<CartProvider>().addToCart(
+                                    product,
+                                    1,
+                                    'Default',
+                                    _user.id ?? '',
+                                  );
                             },
                             child: Text(
                               'Add to cart'.toUpperCase(),

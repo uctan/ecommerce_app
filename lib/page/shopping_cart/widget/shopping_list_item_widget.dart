@@ -1,36 +1,60 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:app_ecomerce/common/app_state_cubit/app_state_cubit.dart';
 import 'package:app_ecomerce/data/model/cart_item.dart';
-import 'package:app_ecomerce/data/model/product_api.dart';
+import 'package:app_ecomerce/data/model/user_api.dart';
+
 import 'package:app_ecomerce/data/provider/cart_provider.dart';
+import 'package:app_ecomerce/data/service/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class ShopListItemWidget extends StatefulWidget {
   final CartItem cartItem;
   final int index;
 
-  const ShopListItemWidget(
-      {super.key, required this.cartItem, required this.index});
+  const ShopListItemWidget({
+    super.key,
+    required this.cartItem,
+    required this.index,
+  });
 
   @override
   State<ShopListItemWidget> createState() => _ShopListItemWidgetState();
 }
 
 class _ShopListItemWidgetState extends State<ShopListItemWidget> {
-  Product product = Product();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchCurrentUser();
+  }
+
+  User _user = User();
+  final UserService _userService = UserService();
+  Future<void> _fetchCurrentUser() async {
+    _userService.setUpdateListerner(() {
+      setState(() {
+        if (_userService.users.isNotEmpty) {
+          _user = _userService.users.first;
+        }
+      });
+    });
+    _userService.fetchUserCurrent();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String base64String = widget.cartItem.product.image ?? '';
-    Uint8List decodedBytes = base64Decode(base64String.split(',')[1]);
-    final priceFormatted = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ')
-        .format(widget.cartItem.product.price);
+    final String base64String = widget.cartItem.product.image ?? '';
+    final Uint8List decodedBytes = base64Decode(base64String.split(',').last);
+    final String priceFormatted = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'VNĐ',
+    ).format(widget.cartItem.product.price);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -41,18 +65,11 @@ class _ShopListItemWidgetState extends State<ShopListItemWidget> {
           children: [
             SlidableAction(
               onPressed: (context) {
-                QuickAlert.show(
-                    context: context,
-                    type: QuickAlertType.confirm,
-                    text: 'Do you want to delete this product?',
-                    confirmBtnText: 'Yes',
-                    cancelBtnText: 'No',
-                    confirmBtnColor: Colors.blue,
-                    onConfirmBtnTap: () {
-                      Provider.of<CartProvider>(context, listen: false)
-                          .removeCartItem(widget.index);
-                      Navigator.of(context).pop();
-                    });
+                Provider.of<CartProvider>(context, listen: false)
+                    .removeCartItem(
+                  widget.index,
+                  _user.id ?? '',
+                );
               },
               backgroundColor: Colors.red,
               icon: Icons.delete,
@@ -60,63 +77,61 @@ class _ShopListItemWidgetState extends State<ShopListItemWidget> {
           ],
         ),
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  offset: Offset(0, 4),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ]),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                offset: const Offset(0, 4),
+                blurRadius: 8,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
           child: Row(
             children: [
-              Container(
-                child: buildImage(decodedBytes: decodedBytes),
-              ),
-              SizedBox(width: 10),
+              buildImage(decodedBytes: decodedBytes),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.cartItem.product.name!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Text(
                           'Quantity: ${widget.cartItem.product.countInStock!}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             color: Colors.grey,
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Text(
                           '${widget.cartItem.product.discount!}%',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           priceFormatted,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -125,27 +140,33 @@ class _ShopListItemWidgetState extends State<ShopListItemWidget> {
                           children: [
                             buildOutlineButton(
                               icon: Icons.remove,
-                              press: () {
+                              onPressed: () {
                                 Provider.of<CartProvider>(context,
                                         listen: false)
-                                    .decreaseCartItemQuantity(widget.index);
+                                    .decreaseCartItemQuantity(
+                                  widget.index,
+                                  _user.id ?? '',
+                                );
                               },
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Text(
-                              '${widget.cartItem.quantity.toString()}',
-                              style: TextStyle(
+                              '${widget.cartItem.quantity}',
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             buildOutlineButton(
                               icon: Icons.add,
-                              press: () {
+                              onPressed: () {
                                 Provider.of<CartProvider>(context,
                                         listen: false)
-                                    .increaseCartItemQuantity(widget.index);
+                                    .increaseCartItemQuantity(
+                                  widget.index,
+                                  _user.id ?? '',
+                                );
                               },
                             ),
                           ],
@@ -172,8 +193,10 @@ class _ShopListItemWidgetState extends State<ShopListItemWidget> {
     );
   }
 
-  SizedBox buildOutlineButton(
-      {required IconData icon, required VoidCallback press}) {
+  SizedBox buildOutlineButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
     return SizedBox(
       width: 30,
       height: 30,
@@ -185,7 +208,7 @@ class _ShopListItemWidgetState extends State<ShopListItemWidget> {
             borderRadius: BorderRadius.circular(13),
           ),
         ),
-        onPressed: press,
+        onPressed: onPressed,
       ),
     );
   }

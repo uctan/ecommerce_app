@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState.initial());
 
-  // List<Product> get items => state.items;
+
   List<Product> get items => state.items;
 
   void addProductToCart(Product product) {
