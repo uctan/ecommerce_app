@@ -41,13 +41,15 @@ class OrderService {
             shippingAddress: shippingAddress,
             orderItems: orderItems,
             paymentMethod: eachTeam['paymentMethod'],
-            itemsPrice: eachTeam['itemsPrice'] as int,
-            totalPrice: eachTeam['totalPrice'] as int,
+            // itemsPrice: eachTeam['itemsPrice'] as double,
+            // totalPrice: eachTeam['totalPrice'] as double,
+            itemsPrice: eachTeam['itemsPrice'],
+            totalPrice: eachTeam['totalPrice'],
             user: eachTeam['user'].toString(),
             isPaid: eachTeam['isPaid'] ?? false,
             isDelivered: eachTeam['isDelivered'] ?? false,
             id: eachTeam['_id'].toString(),
-            shippingPrice: eachTeam['shippingPrice'] as int,
+            shippingPrice: eachTeam['shippingPrice'],
           );
           orders.add(order);
         }

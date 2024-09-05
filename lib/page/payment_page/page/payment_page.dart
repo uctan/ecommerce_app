@@ -1,3 +1,5 @@
+import 'package:app_ecomerce/data/model/order.dart';
+import 'package:app_ecomerce/data/provider/order_provider.dart';
 import 'package:app_ecomerce/data/utils/api_endpoints.dart';
 import 'package:app_ecomerce/page/home_page/page/main_page.dart';
 import 'package:app_ecomerce/page/payment_page/page/delivery_method.dart';
@@ -419,7 +421,35 @@ class _PayMentPageState extends State<PayMentPage> {
             ),
             SizedBox(width: 10),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (selectedPaymentMethod == 1 && selectedDeliveryMethod == 1) {
+                  context.read<OrderProvider>().createOrder(
+                        'later_money',
+                        true,
+                        false,
+                        widget.shippingFee,
+                        cartProvider.totalPrice,
+                        _user.name ?? '',
+                        _user.address ?? '',
+                        _user.city ?? '',
+                        _user.phone ?? 0,
+                        _user.id.toString(),
+                      );
+                } else {
+                  context.read<OrderProvider>().createOrder(
+                        'later_money',
+                        false,
+                        false,
+                        widget.shippingFee,
+                        cartProvider.totalPrice,
+                        _user.name ?? '',
+                        _user.address ?? '',
+                        _user.city ?? '',
+                        _user.phone ?? 0,
+                        _user.id.toString(),
+                      );
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,

@@ -1,13 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 
 class Order {
   ShippingAddress shippingAddress;
   String? id;
   List<OrderItem> orderItems;
   String paymentMethod;
-  int itemsPrice;
-  int totalPrice;
-  int shippingPrice;
+  double itemsPrice;
+  double totalPrice;
+  double shippingPrice;
   String user;
   bool isPaid;
   bool isDelivered;
@@ -51,9 +54,9 @@ class Order {
         ),
       ),
       paymentMethod: map['paymentMethod'] as String? ?? '',
-      itemsPrice: map['itemsPrice'] as int? ?? 0,
-      totalPrice: map['totalPrice'] as int? ?? 0,
-      shippingPrice: map['shippingPrice'] as int? ?? 0,
+      itemsPrice: (map['itemsPrice'] as num?)?.toDouble() ?? 0.0,
+      totalPrice: (map['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      shippingPrice: (map['shippingPrice'] as num?)?.toDouble() ?? 0.0,
       user: map['user'] as String? ?? '',
       isPaid: map['isPaid'] as bool? ?? false,
       isDelivered: map['isDelivered'] as bool? ?? false,
@@ -71,9 +74,9 @@ class OrderItem {
   int amount;
   String price;
   String image;
-  int discount;
-  String product;
-  String id;
+  double discount;
+  String? product;
+  String? id;
 
   OrderItem({
     required this.name,
@@ -81,8 +84,8 @@ class OrderItem {
     required this.price,
     required this.image,
     required this.discount,
-    required this.product,
-    required this.id,
+    this.product,
+    this.id,
   });
 
   Map<String, dynamic> toMap() {
@@ -103,11 +106,17 @@ class OrderItem {
       amount: map['amount'] as int? ?? 0,
       price: map['price'] as String? ?? '',
       image: map['image'] as String? ?? '',
-      discount: map['discount'] as int? ?? 0,
+      discount: (map['discount'] as num?)?.toDouble() ?? 0.0,
       product: map['product'] as String? ?? '',
       id: map['id'] as String? ?? '',
     );
   }
+  @override
+  String toString() {
+    return 'OrderItem(name: $name, amount: $amount, price: $price, image: $image, discount: $discount, product: $product, id: $id)';
+  }
+
+  toJson() {}
 }
 
 class ShippingAddress {
@@ -124,7 +133,7 @@ class ShippingAddress {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'fullName': fullName,
       'address': address,
       'city': city,
@@ -134,10 +143,15 @@ class ShippingAddress {
 
   factory ShippingAddress.fromMap(Map<String, dynamic> map) {
     return ShippingAddress(
-      fullName: map['fullName'] as String? ?? '',
-      address: map['address'] as String? ?? '',
-      city: map['city'] as String? ?? '',
-      phone: map['phone'] as int? ?? 0,
+      fullName: map['fullName'] as String,
+      address: map['address'] as String,
+      city: map['city'] as String,
+      phone: map['phone'] as int,
     );
+  }
+
+  @override
+  String toString() {
+    return 'ShippingAddress(fullName: $fullName, address: $address, city: $city, phone: $phone)';
   }
 }

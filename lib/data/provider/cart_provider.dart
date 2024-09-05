@@ -17,6 +17,10 @@ class CartProvider extends ChangeNotifier {
   }
   List<CartItem> get cartItems => _cartItems;
 
+  // List<int> get productPrices {
+  //   return _cartItems.map((item) => item.product.price ?? 0).toList();
+  // }
+
   Future<void> saveCart(String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String cartJson =

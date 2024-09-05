@@ -44,7 +44,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => CartProvider(userId),
         ),
-        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProxyProvider<CartProvider, OrderProvider>(
+          create: (context) =>
+              OrderProvider(cartProvider: context.read<CartProvider>()),
+          update: (context, cartProvider, orderProvider) =>
+              OrderProvider(cartProvider: cartProvider),
+        ),
         BlocProvider(
           create: (context) => AppStateCubit(),
         ),
