@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static final String baseUrl = 'http://192.168.1.96:3002/api/';
+  static final String baseUrl = 'https://doanbanhangbe.onrender.com/api/';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
   static _ProductEndPoints productEndPoints = _ProductEndPoints();
 }
