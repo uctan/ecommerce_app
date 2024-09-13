@@ -29,8 +29,9 @@ class ProductCard extends StatelessWidget {
     Uint8List decodedBytes = base64Decode(base64String.split(',')[1]);
 
     //neu 0% thi se khong xuat hien
-    final double? promotition = double.tryParse(product.discount ?? '');
-    final bool showPromotion = promotition != null && promotition > 0;
+    // final double? promotition = double.tryParse(product.discount ?? '');
+    final bool showPromotion =
+        product.discount != null && product.discount! > 0;
 
     // dinh dang gia tien
     final priceFormatted = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ')

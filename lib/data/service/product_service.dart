@@ -32,7 +32,9 @@ class ProductService {
               ? (eachTeam['countInStock'] as int).toDouble()
               : eachTeam['countInStock'] as double?,
           rating: eachTeam['rating'] is int ? eachTeam['rating'] as int : null,
-          discount: eachTeam['discount']?.toString(),
+          discount: eachTeam['discount'] is int
+              ? (eachTeam['discount'] as int).toDouble()
+              : eachTeam['discount'] as double?,
           selled: eachTeam['selled'] is int ? eachTeam['selled'] as int : null,
           image: eachTeam['image']?.toString(),
           description: eachTeam['description']?.toString(),
@@ -68,7 +70,9 @@ class ProductService {
                 : eachTeam['countInStock'] as double?,
             rating:
                 eachTeam['rating'] is int ? eachTeam['rating'] as int : null,
-            discount: eachTeam['discount']?.toString(),
+            discount: eachTeam['discount'] is int
+                ? (eachTeam['discount'] as int).toDouble()
+                : eachTeam['discount'] as double?,
             selled:
                 eachTeam['selled'] is int ? eachTeam['selled'] as int : null,
             image: eachTeam['image']?.toString(),

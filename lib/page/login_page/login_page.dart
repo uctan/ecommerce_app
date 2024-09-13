@@ -16,87 +16,105 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final LoginController loginController = Get.put(LoginController());
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 50),
-            Text(
-              'Welcome Back',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 35,
-                color: Colors.blue,
-              ),
-            ),
-            SizedBox(height: 5),
-            Row(
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 50),
                 Text(
-                  'New to this APP?',
+                  'Welcome Back',
                   style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 35,
                     color: Colors.blue,
                   ),
                 ),
-                SizedBox(width: 5),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegisterPage(),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      'New to this APP?',
+                      style: TextStyle(
+                        color: Colors.blue,
                       ),
-                    );
-                  },
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
                     ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 10),
-            LogInForm(),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+                    SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 10),
+                LogInForm(),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                PrimaryButton(
+                  buttonText: 'Log In',
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await loginController.loginnUser(context);
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
                 Text(
-                  'Forgot password?',
+                  'Or log in with:',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
                 ),
+                SizedBox(height: 10),
+                LoginOption(),
               ],
             ),
-            SizedBox(height: 20),
-            PrimaryButton(
-              buttonText: 'Log In',
-              onPressed: () async {
-                await loginController.loginnUser(context);
-              },
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Or log in with:',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+          ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.4),
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             ),
-            SizedBox(height: 10),
-            LoginOption(),
-          ],
-        ),
+        ],
       ),
     );
   }

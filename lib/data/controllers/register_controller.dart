@@ -16,8 +16,6 @@ class RegisterController extends GetxController {
   TextEditingController addressController = TextEditingController();
   TextEditingController cityController = TextEditingController();
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
   Future<void> registerWithEmail(BuildContext context) async {
     var headers = {'Content-Type': 'application/json'};
     var url = Uri.parse(

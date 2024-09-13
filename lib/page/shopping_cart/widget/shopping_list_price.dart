@@ -1,6 +1,9 @@
 import 'package:app_ecomerce/common/config/constants.dart';
+import 'package:app_ecomerce/data/provider/cart_provider.dart';
+import 'package:app_ecomerce/page/payment_page/page/track_order_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ShoppingListPrice extends StatefulWidget {
   const ShoppingListPrice({
@@ -12,8 +15,6 @@ class ShoppingListPrice extends StatefulWidget {
 }
 
 class _ShoppingListPriceState extends State<ShoppingListPrice> {
-  double shippingFee = 6.99;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,11 +36,11 @@ class _ShoppingListPriceState extends State<ShoppingListPrice> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Discount',
+                'Quantity',
                 style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
               Text(
-                shippingFee.toStringAsFixed(2),
+                Provider.of<CartProvider>(context).cartCount.toString(),
                 style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
             ],
@@ -48,11 +49,11 @@ class _ShoppingListPriceState extends State<ShoppingListPrice> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Shipping Fee',
+                'Discount',
                 style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
               Text(
-                shippingFee.toStringAsFixed(2),
+                '${Provider.of<CartProvider>(context).totalDiscount.toString()}%',
                 style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
             ],
@@ -69,7 +70,7 @@ class _ShoppingListPriceState extends State<ShoppingListPrice> {
                 ),
               ),
               Text(
-                shippingFee.toStringAsFixed(2),
+                Provider.of<CartProvider>(context).totalPrice.toString(),
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.black87,
@@ -80,7 +81,17 @@ class _ShoppingListPriceState extends State<ShoppingListPrice> {
           ),
           SizedBox(height: 10),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TrackOrderPage(
+                    cartItems: Provider.of<CartProvider>(context, listen: false)
+                        .getCartItemsList(),
+                  ),
+                ),
+              );
+            },
             child: Container(
               width: double.infinity,
               height: 45,

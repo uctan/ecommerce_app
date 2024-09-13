@@ -52,6 +52,7 @@ class UserService {
               avatar: jsonData['avatar'],
               address: jsonData['address'],
               email: jsonData['email'],
+              city: jsonData['city'],
             );
             users = [user];
             onPresentUser?.call();
@@ -80,7 +81,7 @@ class UserService {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken', // Nếu cần xác thực
+          'Authorization': 'Bearer $accessToken',
         },
       );
       if (reponse.statusCode == 200) {

@@ -1,5 +1,7 @@
 import 'package:app_ecomerce/common/config/constants.dart';
 import 'package:app_ecomerce/page/home_page/page/home_page.dart';
+import 'package:app_ecomerce/page/order_user_page/page/order_user_page.dart';
+import 'package:app_ecomerce/page/quick_food/list_product_promotion.dart';
 import 'package:app_ecomerce/page/setting_page/page/setting_page.dart';
 import 'package:app_ecomerce/page/shopping_cart/page/shopping_cart_page.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +19,9 @@ class _MainPageState extends State<MainPage> {
   int currentTab = 0;
   List screens = [
     HomePage(),
-    Scaffold(),
+    ListProductPromotion(),
     ShoppingCartPage(),
-    Scaffold(),
+    OrderUserPage(),
     SettingPage(),
   ];
   @override
@@ -104,12 +106,12 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   Icon(
                     currentTab == 3
-                        ? FontAwesomeIcons.solidCalendar
-                        : FontAwesomeIcons.solidCalendar,
+                        ? FontAwesomeIcons.boxesPacking
+                        : FontAwesomeIcons.boxesPacking,
                     color: currentTab == 3 ? kprimaryColor : Colors.grey,
                   ),
                   Text(
-                    'History',
+                    'Order',
                     style: TextStyle(
                       fontSize: 14,
                       color: currentTab == 3 ? kprimaryColor : Colors.grey,

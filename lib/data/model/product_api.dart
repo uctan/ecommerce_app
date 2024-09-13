@@ -7,7 +7,7 @@ class Product {
   String? type;
   double? countInStock;
   int? rating;
-  String? discount;
+  double? discount;
   int? selled;
   String? image;
   String? description;
@@ -51,7 +51,11 @@ class Product {
               : map['countInStock'] as double)
           : null,
       rating: map['rating'] != null ? map['rating'] as int : null,
-      discount: map['discount'] != null ? map['discount'] as String : null,
+      discount: map['discount'] != null
+          ? (map['discount'] is int
+              ? (map['discount'] as int).toDouble()
+              : map['discount'] as double)
+          : null,
       selled: map['selled'] != null ? map['selled'] as int : null,
       image: map['image'] != null ? map['image'] as String : null,
       description:
