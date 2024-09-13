@@ -1,9 +1,11 @@
+import 'package:app_ecomerce/data/model/user_api.dart';
 import 'package:app_ecomerce/page/payment_page/widget/header_payment.dart';
 import 'package:app_ecomerce/page/payment_page/widget/text_field_information_payment.dart';
 import 'package:flutter/material.dart';
 
 class InformationOrderPage extends StatefulWidget {
-  const InformationOrderPage({super.key});
+  const InformationOrderPage({super.key, required this.user});
+  final User user;
 
   @override
   State<InformationOrderPage> createState() => _InformationOrderPageState();
@@ -47,24 +49,23 @@ class _InformationOrderPageState extends State<InformationOrderPage> {
                     SizedBox(height: 10),
                     TextFieldInfor(
                       labelText: 'FullName:',
-                      text: 'Nguyễn Trần Duy Tân',
+                      text: widget.user.name ?? '',
                     ),
                     TextFieldInfor(
                       labelText: 'Address:',
-                      text: '227/69 Nguyễn Tư Giản p12 quận Gò Vấp',
+                      text: widget.user.address ?? '',
                     ),
                     TextFieldInfor(
                       labelText: 'City:',
-                      text: 'Hồ Chí Minh',
+                      text: widget.user.city ?? '',
                     ),
                     TextFieldInfor(
                       labelText: 'Phone:',
-                      text: '0399441272',
+                      text: widget.user.phone.toString(),
                     ),
                   ],
                 ),
               ),
-             
             ],
           ),
         ),

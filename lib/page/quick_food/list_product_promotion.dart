@@ -9,25 +9,28 @@ import 'package:app_ecomerce/page/quick_food/widget/quick_screen_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ListFoodPage extends StatefulWidget {
-  const ListFoodPage({super.key});
+class ListProductPromotion extends StatefulWidget {
+  const ListProductPromotion({super.key});
 
-  State<ListFoodPage> createState() => _ListFoodPageState();
+  State<ListProductPromotion> createState() => _ListProductPromotionState();
 }
 
-class _ListFoodPageState extends State<ListFoodPage> {
+class _ListProductPromotionState extends State<ListProductPromotion> {
   final ProductService _productService = ProductService();
   List<Product> _product = [];
+  List<Product> _discountedProducts = [];
   bool isLoading = true;
   Future<void> _fetchProducts() async {
-    _productService.setUpdateListener(() {
+    await _productService.getAllProduct();
+    if (mounted) {
       setState(() {
         _product = _productService.products;
+        _discountedProducts =
+            _product.where((product) => product.discount != 0).toList();
         isLoading = false;
-        print('Product count: ${_product.length}');
+        print('Product count with discount: ${_discountedProducts.length}');
       });
-    });
-    await _productService.getAllProduct();
+    }
   }
 
   @override
@@ -48,7 +51,7 @@ class _ListFoodPageState extends State<ListFoodPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               QuickScreenAppbar(
-                text: 'Products',
+                text: 'Promotion Products',
               ),
               const SizedBox(height: 20),
               ProductSearchBar(),
@@ -68,12 +71,12 @@ class _ListFoodPageState extends State<ListFoodPage> {
                       );
                     } else {
                       return ProductCard(
-                        product: _product[index],
+                        product: _discountedProducts[index],
                         isLoading: false,
                       );
                     }
                   },
-                  itemCount: isLoading ? 6 : _product.length,
+                  itemCount: isLoading ? 6 : _discountedProducts.length,
                 ),
               ),
             ],

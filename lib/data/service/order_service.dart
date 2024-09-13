@@ -61,4 +61,54 @@ class OrderService {
       print('Exception occurred: $e');
     }
   }
+
+  Future<void> getDetailOrderUser(String orderID) async {
+    var url = Uri.parse(
+        '${ApiEndPoints.baseUrl + ApiEndPoints.orderEndPoints.getDetailOrder}/$orderID');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        print('Response body: ${response.body}');
+
+        var data = jsonData['data'];
+
+        // Kiểm tra nếu 'data' là Map
+        if (data is Map<String, dynamic>) {
+          ShippingAddress shippingAddress = ShippingAddress.fromMap(
+            data['shippingAddress'] as Map<String, dynamic>,
+          );
+
+          List<OrderItem> orderItems = List<OrderItem>.from(
+            (data['orderItems'] as List).map(
+              (item) => OrderItem.fromMap(item as Map<String, dynamic>),
+            ),
+          );
+
+          final order = Order(
+            shippingAddress: shippingAddress,
+            orderItems: orderItems,
+            paymentMethod: data['paymentMethod'],
+            itemsPrice: data['itemsPrice'],
+            totalPrice: data['totalPrice'],
+            user: data['user'].toString(),
+            isPaid: data['isPaid'] ?? false,
+            isDelivered: data['isDelivered'] ?? false,
+            id: data['_id'].toString(),
+            shippingPrice: data['shippingPrice'],
+          );
+
+          // Thêm đối tượng Order vào danh sách orders
+          orders.add(order);
+          onPresentOrder?.call();
+        } else {
+          print('Unexpected data format.');
+        }
+      } else {
+        print('Failed to fetch orders. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+    }
+  }
 }

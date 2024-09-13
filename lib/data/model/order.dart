@@ -1,38 +1,37 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 class Order {
-  ShippingAddress shippingAddress;
+  ShippingAddress? shippingAddress;
   String? id;
-  List<OrderItem> orderItems;
-  String paymentMethod;
-  double itemsPrice;
-  double totalPrice;
-  double shippingPrice;
-  String user;
-  bool isPaid;
-  bool isDelivered;
+  List<OrderItem>? orderItems;
+  String? paymentMethod;
+  int? itemsPrice;
+  int? totalPrice;
+  int? shippingPrice;
+  String? user;
+  bool? isPaid;
+  bool? isDelivered;
 
   Order({
-    required this.shippingAddress,
+    this.shippingAddress,
     this.id,
-    required this.orderItems,
-    required this.paymentMethod,
-    required this.itemsPrice,
-    required this.shippingPrice,
-    required this.totalPrice,
-    required this.user,
-    required this.isPaid,
-    required this.isDelivered,
+    this.orderItems,
+    this.paymentMethod,
+    this.itemsPrice,
+    this.shippingPrice,
+    this.totalPrice,
+    this.user,
+    this.isPaid,
+    this.isDelivered,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'shippingAddress': shippingAddress.toMap(),
+      'shippingAddress':
+          shippingAddress != null ? shippingAddress!.toMap() : null,
       'id': id,
-      'orderItems': orderItems.map((x) => x.toMap()).toList(),
+      'orderItems':
+          orderItems != null ? orderItems!.map((x) => x.toMap()).toList() : [],
       'paymentMethod': paymentMethod,
       'itemsPrice': itemsPrice,
       'totalPrice': totalPrice,
@@ -54,9 +53,9 @@ class Order {
         ),
       ),
       paymentMethod: map['paymentMethod'] as String? ?? '',
-      itemsPrice: (map['itemsPrice'] as num?)?.toDouble() ?? 0.0,
-      totalPrice: (map['totalPrice'] as num?)?.toDouble() ?? 0.0,
-      shippingPrice: (map['shippingPrice'] as num?)?.toDouble() ?? 0.0,
+      itemsPrice: map['itemsPrice'] as int? ?? 0,
+      totalPrice: map['totalPrice'] as int? ?? 0,
+      shippingPrice: map['shippingPrice'] as int? ?? 0,
       user: map['user'] as String? ?? '',
       isPaid: map['isPaid'] as bool? ?? false,
       isDelivered: map['isDelivered'] as bool? ?? false,
@@ -74,9 +73,9 @@ class OrderItem {
   int amount;
   String price;
   String image;
-  double discount;
-  String? product;
-  String? id;
+  int discount;
+  String product;
+  String id;
 
   OrderItem({
     required this.name,
@@ -84,8 +83,8 @@ class OrderItem {
     required this.price,
     required this.image,
     required this.discount,
-    this.product,
-    this.id,
+    required this.product,
+    required this.id,
   });
 
   Map<String, dynamic> toMap() {
@@ -106,17 +105,11 @@ class OrderItem {
       amount: map['amount'] as int? ?? 0,
       price: map['price'] as String? ?? '',
       image: map['image'] as String? ?? '',
-      discount: (map['discount'] as num?)?.toDouble() ?? 0.0,
+      discount: map['discount'] as int? ?? 0,
       product: map['product'] as String? ?? '',
       id: map['id'] as String? ?? '',
     );
   }
-  @override
-  String toString() {
-    return 'OrderItem(name: $name, amount: $amount, price: $price, image: $image, discount: $discount, product: $product, id: $id)';
-  }
-
-  toJson() {}
 }
 
 class ShippingAddress {
@@ -133,7 +126,7 @@ class ShippingAddress {
   });
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'fullName': fullName,
       'address': address,
       'city': city,
@@ -143,15 +136,10 @@ class ShippingAddress {
 
   factory ShippingAddress.fromMap(Map<String, dynamic> map) {
     return ShippingAddress(
-      fullName: map['fullName'] as String,
-      address: map['address'] as String,
-      city: map['city'] as String,
-      phone: map['phone'] as int,
+      fullName: map['fullName'] as String? ?? '',
+      address: map['address'] as String? ?? '',
+      city: map['city'] as String? ?? '',
+      phone: map['phone'] as int? ?? 0,
     );
-  }
-
-  @override
-  String toString() {
-    return 'ShippingAddress(fullName: $fullName, address: $address, city: $city, phone: $phone)';
   }
 }

@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:app_ecomerce/data/model/cart_item.dart';
-import 'package:app_ecomerce/data/model/order.dart';
 import 'package:app_ecomerce/data/provider/cart_provider.dart';
 import 'package:app_ecomerce/data/utils/api_endpoints.dart';
+import 'package:app_ecomerce/page/payment_page/page/payment_success.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,75 +9,90 @@ class OrderProvider extends ChangeNotifier {
   final CartProvider cartProvider;
   OrderProvider({required this.cartProvider});
 
-  Future<void> createOrder(
-    String paymentMethod,
-    bool isPaid,
-    bool isDelivered,
-    double shippingPrice,
-    double totalPrice,
-    String fullName,
-    String address,
-    String city,
-    int phone,
-    String user,
-  ) async {
-    var headers = {'Content-Type': 'application/json'};
-    final List<CartItem> _cartItems = cartProvider.cartItems;
+  Future<void> createOrder({
+    required String paymentMethod,
+    required double itemsPrice,
+    required double shippingPrice,
+    required double totalPrice,
+    required String fullName,
+    required String address,
+    required String city,
+    required String phone,
+    required String user,
+    required bool isPaid,
+    String? paidAt,
+    required String email,
+    required String accessToken,
+    required BuildContext context,
+  }) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
 
-    // Tạo đối tượng ShippingAddress
-    final shippingAddress = {
+    final List<Map<String, dynamic>> orderItems = cartProvider.cartItems
+        .map((item) => {
+              'product': item.product.id,
+              'name': item.product.name,
+              'amount': item.quantity,
+              'image': item.product.image,
+              'price': item.product.price,
+              'discount': item.product.discount,
+            })
+        .toList();
+
+    Map<String, dynamic> orderData = {
+      'paymentMethod': paymentMethod,
+      'itemsPrice': itemsPrice,
+      'shippingPrice': shippingPrice,
+      'totalPrice': totalPrice,
       'fullName': fullName,
       'address': address,
       'city': city,
       'phone': phone,
-    };
-
-    // Tạo đối tượng OrderItem từ các mục trong giỏ hàng
-    final orderItems = _cartItems
-        .map(
-          (item) => {
-            'name': item.product.name ?? '',
-            'amount': item.quantity ?? 0,
-            'price': item.product.price?.toString() ?? '0.0',
-            'image': item.product.image ?? '',
-            'discount': item.product.discount ?? 0.0,
-            'product': item.product.id,
-          },
-        )
-        .toList();
-    print('orderItems nha : $orderItems');
-
-    // Chuẩn bị dữ liệu cho order theo định dạng API yêu cầu
-    final orderData = {
-      'paymentMethod': paymentMethod,
-      'itemsPrice': cartProvider.totalPrice ?? 0.0,
-      'shippingPrice': shippingPrice,
-      'totalPrice': totalPrice,
-      'shippingAddress': shippingAddress, // Sử dụng shippingAddress
-      'orderItems': orderItems, // Chuyển đổi trực tiếp
+      'orderItems': orderItems,
       'user': user,
       'isPaid': isPaid,
-      'isDelivered': isDelivered,
+      'paidAt': paidAt,
+      'email': email,
     };
 
-    print('Order Data: ${jsonEncode(orderData)}'); // Log dữ liệu gửi đi
+    print('Dữ liệu đơn hàng gửi đi: ${jsonEncode(orderData)}');
 
     final url =
         ApiEndPoints.baseUrl + ApiEndPoints.orderEndPoints.postCreateOrder;
 
-    final response = await http.post(
-      Uri.parse(url),
-      // headers: headers,
-      body: jsonEncode(orderData),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(orderData),
+      );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      print('Response from API: $jsonResponse');
-    } else {
-      final errorResponse = jsonDecode(response.body);
-      print('Failed to create order: ${errorResponse['message']}');
-      throw Exception('Failed to create order: ${errorResponse['message']}');
+      print('Trạng thái phản hồi: ${response.statusCode}');
+      print('Nội dung phản hồi: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 'OK') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentSuccess(),
+            ),
+          );
+        } else {
+          throw Exception(jsonResponse['message']);
+        }
+        print('Phản hồi từ API: $jsonResponse');
+        // Xử lý đơn hàng thành công ở đây (ví dụ: xóa giỏ hàng, hiển thị thông báo thành công)
+      } else {
+        throw Exception('Lỗi server: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Lỗi khi tạo đơn hàng: $e');
+      throw Exception('Không thể tạo đơn hàng: $e');
     }
   }
 }

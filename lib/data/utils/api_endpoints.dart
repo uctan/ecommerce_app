@@ -22,7 +22,7 @@ class _ProductEndPoints {
 class _OrderEndPoints {
   final String postCreateOrder = 'order/create';
   final String getAllOrder = 'order/get-all-order';
-  final String getDetailOrder = 'order/get-details-order/';
+  final String getDetailOrder = 'order/get-details-order';
   final String deleteOrder = 'order/cancel-order/';
 }
 

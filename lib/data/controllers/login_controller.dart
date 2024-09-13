@@ -4,6 +4,8 @@ import 'package:app_ecomerce/data/utils/api_endpoints.dart';
 import 'package:app_ecomerce/page/home_page/page/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {
@@ -40,6 +42,12 @@ class LoginController {
         );
       } else {
         print(json['status']);
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: 'Oops...',
+          text: 'Sorry, You entered the wrong password',
+        );
       }
     }
   }

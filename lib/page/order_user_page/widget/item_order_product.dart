@@ -23,11 +23,14 @@ class OrderItemProduct extends StatelessWidget {
     return Column(
       children: [
         ListView.builder(
-          itemCount: order.orderItems.length,
+          itemCount: order.orderItems?.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            final orderItem = order.orderItems[index];
+            final orderItem = order.orderItems?[index];
+            if (orderItem == null) {
+              return const SizedBox();
+            }
             Uint8List? decodedBytes;
             String base64String = orderItem.image;
 
@@ -38,8 +41,6 @@ class OrderItemProduct extends StatelessWidget {
                 decodedBytes = null;
               }
             }
-
-            print('image order ${orderItem.image}');
 
             // Chuyển đổi price từ String sang double và định dạng giá tiền
             final double? price = double.tryParse(orderItem.price);

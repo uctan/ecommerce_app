@@ -1,5 +1,6 @@
 import 'package:app_ecomerce/common/app_state_cubit/app_state_cubit.dart';
 import 'package:app_ecomerce/page/detail_page/widget/cart_item_badge.dart';
+import 'package:app_ecomerce/page/home_page/page/main_page.dart';
 import 'package:app_ecomerce/page/shopping_cart/page/shopping_cart_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ import 'package:provider/provider.dart';
 class QuickScreenAppbar extends StatelessWidget {
   const QuickScreenAppbar({
     super.key,
+    required this.text,
   });
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,12 @@ class QuickScreenAppbar extends StatelessWidget {
       children: [
         IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainPage(),
+              ),
+            );
           },
           style: IconButton.styleFrom(
             backgroundColor: Colors.white,
@@ -31,7 +39,7 @@ class QuickScreenAppbar extends StatelessWidget {
         ),
         const Spacer(),
         Text(
-          "Products",
+          text,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
